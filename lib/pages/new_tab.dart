@@ -1,6 +1,7 @@
 import 'dart:math' show Random;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show Ticker;
 
 class NewTab extends StatefulWidget {
   TabInfo get getTabInfo => _tabInfo;
@@ -28,9 +29,10 @@ class _NewTabState extends State<NewTab>
     super.build(context);
     return Center(
       child: RaisedButton(
+        shape: StadiumBorder(),
+        child: Text('$_text'),
         onPressed: () =>
             widget.changeState(() => widget.getTabInfo.title = 'title changed'),
-        child: Text(_text.toString()),
       ),
     );
   }
@@ -39,24 +41,57 @@ class _NewTabState extends State<NewTab>
   bool get wantKeepAlive => true;
 }
 
-class TabInfo {
+class TabInfo implements TickerProvider {
+  NewTab _tab;
   String _title;
   IconData _icon;
-  NewTab _tab;
+  bool _canReset = true;
+  AnimationController _controller;
+  final GlobalKey _mainKey = GlobalKey();
+  void Function(VoidCallback) changeState;
+  final Duration animationLength = Duration(milliseconds: 200);
 
+  NewTab get tab => _tab;
   String get title => _title;
   IconData get icon => _icon;
-  NewTab get tab => _tab;
 
   set title(String newTitle) => _title = newTitle;
   set icon(IconData newIcon) => _icon = newIcon;
 
+  Widget get widget => ScaleTransition(
+        child: _tab,
+        key: _mainKey,
+        scale: _controller,
+      );
+
+  void reset() {
+    if (!_canReset) return;
+    _canReset = false;
+    _icon = Icons.tab;
+    _title = 'New Tab';
+    _controller.reverse().then((value) {
+      changeState(
+          () => _tab = NewTab(changeState, tabInfo: this, key: GlobalKey()));
+      _controller.forward().then((value) => _canReset = true);
+    });
+  }
+
   TabInfo(
-    void Function(VoidCallback) changeState, {
+    this.changeState, {
     IconData icon,
     String title,
   })  : _title = title ?? 'New Tab',
         _icon = icon ?? Icons.tab {
     _tab = NewTab(changeState, tabInfo: this, key: GlobalKey());
+    _controller = AnimationController(
+      value: 1,
+      vsync: this,
+      duration: animationLength,
+    );
+  }
+
+  @override
+  Ticker createTicker(onTick) {
+    return Ticker(onTick);
   }
 }

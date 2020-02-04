@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scrapper/Pages/search_page.dart';
+import 'package:scrapper/pages/search_page.dart';
 
 class ScrapperApp extends StatelessWidget {
   @override
