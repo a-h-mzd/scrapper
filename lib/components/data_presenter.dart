@@ -89,7 +89,6 @@ class _DataPresenterState extends State<DataPresenter> {
                   } catch (e) {}
                   final String textToCopy = variant.name;
                   await Clipboard.setData(ClipboardData(text: textToCopy));
-                  ScaffoldFeatureController controller;
                   final SnackBar snackBar = SnackBar(
                     content: Row(
                       children: <Widget>[
@@ -114,7 +113,7 @@ class _DataPresenterState extends State<DataPresenter> {
                               onTap: () async {
                                 await Clipboard.setData(
                                     ClipboardData(text: oldData));
-                                controller.close();
+                                Scaffold.of(context).hideCurrentSnackBar();
                               },
                             ),
                           ),
@@ -124,7 +123,8 @@ class _DataPresenterState extends State<DataPresenter> {
                       top: BorderSide(width: 2, color: Colors.blue),
                     ),
                   );
-                  controller = Scaffold.of(context).showSnackBar(snackBar);
+                  Scaffold.of(context).hideCurrentSnackBar();
+                  Scaffold.of(context).showSnackBar(snackBar);
                 },
                 cells: [
                   DataCell(CText(variant.name)),

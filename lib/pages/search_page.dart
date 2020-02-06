@@ -8,8 +8,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final FocusNode _focusNode = FocusNode();
   final List<TabInfo> _tabs = <TabInfo>[];
-  bool canAddTab = true;
+  bool _canAddTab = true;
 
   @override
   void initState() {
@@ -20,6 +21,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    _focusNode.requestFocus();
     return DefaultTabController(
       length: _tabs.length,
       child: Builder(builder: builder),
@@ -61,12 +63,12 @@ class _SearchPageState extends State<SearchPage> {
   void _addNewTab() => _tabs.add(TabInfo(setState));
 
   void addNewTab(BuildContext context) async {
-    if (!canAddTab) return;
-    canAddTab = false;
+    if (!_canAddTab) return;
+    _canAddTab = false;
     setState(_addNewTab);
     await Future.delayed(Duration(milliseconds: 100));
     DefaultTabController.of(context).animateTo(_tabs.length - 1);
-    canAddTab = true;
+    _canAddTab = true;
   }
 
   void closeAll() async {
@@ -103,7 +105,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget builder(BuildContext context) => RawKeyboardListener(
         onKey: (event) => onKey(context, event),
-        focusNode: FocusNode(),
+        focusNode: _focusNode,
         autofocus: true,
         child: Scaffold(
           appBar: AppBar(
