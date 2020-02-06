@@ -6,10 +6,11 @@ class ScrapperApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'scrapper',
+      home: SearchPage(),
       theme: ThemeData(
         fontFamily: 'Roboto',
       ),
-      home: SearchPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
