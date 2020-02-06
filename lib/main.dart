@@ -8,5 +8,8 @@ void main() {
   if (Platform.isWindows || Platform.isLinux)
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
 
+  ErrorWidget.builder = (FlutterErrorDetails details) =>
+      Container(); //TODO: send details.stack to server.
+
   runApp(ScrapperApp());
 }
