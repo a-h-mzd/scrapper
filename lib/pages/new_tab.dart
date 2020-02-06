@@ -1,7 +1,7 @@
-import 'dart:math' show Random;
-
 import 'package:flutter/material.dart';
+import 'package:scrapper/models/variant.dart';
 import 'package:flutter/scheduler.dart' show Ticker;
+import 'package:scrapper/components/data_presenter.dart';
 
 class NewTab extends StatefulWidget {
   TabInfo get getTabInfo => _tabInfo;
@@ -22,17 +22,33 @@ class NewTab extends StatefulWidget {
 
 class _NewTabState extends State<NewTab>
     with AutomaticKeepAliveClientMixin<NewTab> {
-  int _text = Random().nextInt(100);
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Center(
-      child: RaisedButton(
-        shape: StadiumBorder(),
-        child: Text('$_text'),
-        onPressed: () =>
-            widget.changeState(() => widget.getTabInfo.title = 'title changed'),
+      child: SingleChildScrollView(
+        child: DataPresenter([
+          Variant(
+            name: '1',
+            aADDScore: 14,
+            alleleFrequency: 16,
+          ),
+          Variant(
+            name: '2',
+            aADDScore: 12,
+            alleleFrequency: 17,
+          ),
+          Variant(
+            name: '3',
+            aADDScore: 13,
+            alleleFrequency: 15,
+          ),
+        ].expand<Variant>((element) {
+          List<Variant> ret = [];
+          for (int i = 0; i < 4; i++) ret.add(element);
+          return ret;
+        }).toList()),
       ),
     );
   }
