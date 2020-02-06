@@ -83,8 +83,10 @@ class _DataPresenterState extends State<DataPresenter> {
       rows: _variants
           .map((Variant variant) => DataRow(
                 onSelectChanged: (_) async {
-                  final String oldData =
-                      (await Clipboard.getData('text/plain')).text;
+                  String oldData;
+                  try {
+                    oldData = (await Clipboard.getData('text/plain')).text;
+                  } catch (e) {}
                   final String textToCopy = variant.name;
                   await Clipboard.setData(ClipboardData(text: textToCopy));
                   ScaffoldFeatureController controller;
@@ -98,23 +100,24 @@ class _DataPresenterState extends State<DataPresenter> {
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        Material(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            child: Padding(
-                              child: CText('undo'),
-                              padding: const EdgeInsets.all(8),
-                            ),
-                            splashColor: Colors.blueGrey,
+                        if (oldData != null)
+                          Material(
+                            color: Colors.blue,
                             borderRadius: BorderRadius.circular(8),
-                            onTap: () async {
-                              await Clipboard.setData(
-                                  ClipboardData(text: oldData));
-                              controller.close();
-                            },
+                            child: InkWell(
+                              child: Padding(
+                                child: CText('undo'),
+                                padding: const EdgeInsets.all(8),
+                              ),
+                              splashColor: Colors.blueGrey,
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: () async {
+                                await Clipboard.setData(
+                                    ClipboardData(text: oldData));
+                                controller.close();
+                              },
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     shape: Border(
