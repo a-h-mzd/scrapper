@@ -17,4 +17,6 @@ class Input {
     if (file.existsSync()) output = file.readAsStringSync();
     return output;
   }
+
+  String get hivePath => Directory.current.path + '/data/';
 }
