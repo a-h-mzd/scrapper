@@ -1,10 +1,18 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:scrapper/models/variant.dart';
 
 class GetVariants {
+  static GetVariants _instance;
+
+  factory GetVariants() {
+    if (_instance == null) _instance = GetVariants._internal();
+    return _instance;
+  }
+
+  GetVariants._internal();
+
   Future<String> _getGenomeResultsLink(String genomeName) async {
     Dio client = new Dio();
     var uri = Uri.http('www.iranome.ir', '/awesome', {"query": genomeName});
@@ -17,17 +25,18 @@ class GetVariants {
     return res.headers["location"].first;
   }
 
-  Future<List<Variant>> _getVariants(String link) async {
+  Future<List<Variant>> getVariants(String genomeName) async {
+    String link = await _getGenomeResultsLink(genomeName);
     Dio client = new Dio();
     var res = await client.get(link);
     RegExp regExp = RegExp(r'window\.table_variants = (?<variantsJSON>.*);');
     Match match = regExp.allMatches(res.toString()).first;
     var variantsJSON = match.group(0);
-    variantsJSON = variantsJSON.substring(24, variantsJSON.length-1);
-    List <dynamic> variantMappings = jsonDecode(variantsJSON);
+    variantsJSON = variantsJSON.substring(24, variantsJSON.length - 1);
+    List<dynamic> variantMappings = jsonDecode(variantsJSON);
     List<Variant> variants = [];
     for (dynamic variantMapping in variantMappings) {
-      Map <String, dynamic> res; // TODO
+      Map<String, dynamic> res; // TODO
       Variant variant = Variant(
         name: variantMapping['variant_id'],
         alleleCount: variantMapping['allele_count'],
@@ -39,15 +48,6 @@ class GetVariants {
       );
       variants.add(variant);
     }
-    variants.map((e) => print(e.name)).toList();
     return variants;
   }
-}
-
-Future<int> main(List<String> args) async {
-  GetVariants genome = GetVariants();
-  var link = await genome._getGenomeResultsLink("OTX2");
-  print(link);
-  await genome._getVariants(link);
-  return 0;
 }

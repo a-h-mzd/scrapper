@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scrapper/models/variant.dart';
+import 'package:scrapper/API/get_variants.dart';
 import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:scrapper/components/data_presenter.dart';
 
@@ -22,33 +23,41 @@ class NewTab extends StatefulWidget {
 
 class _NewTabState extends State<NewTab>
     with AutomaticKeepAliveClientMixin<NewTab> {
+  List<Variant> variants = [];
+  int _stage = 1;
+
+  void changeStage(int newStage, var data) async {}
+
+  @override
+  void initState() {
+    super.initState();
+
+    GetVariants()
+        .getVariants('OTX2')
+        .then((value) => setState(() => variants = value));
+  }
+
+  Widget get stageWidget {
+    Widget child;
+    switch (_stage) {
+      case 0:
+        child = Container();
+        break;
+      case 1:
+        child = variants.isEmpty ? Container() : DataPresenter(variants);
+        break;
+      default:
+        child = Container();
+    }
+    return child;
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Center(
       child: SingleChildScrollView(
-        child: DataPresenter([
-          Variant(
-            name: '1',
-            cADDScore: 14,
-            alleleFrequency: 16,
-          ),
-          Variant(
-            name: '2',
-            cADDScore: 12,
-            alleleFrequency: 17,
-          ),
-          Variant(
-            name: '3',
-            cADDScore: 13,
-            alleleFrequency: 15,
-          ),
-        ].expand<Variant>((element) {
-          List<Variant> ret = [];
-          for (int i = 0; i < 4; i++) ret.add(element);
-          return ret;
-        }).toList()),
+        child: stageWidget,
       ),
     );
   }

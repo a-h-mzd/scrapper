@@ -24,6 +24,7 @@ class _DataPresenterState extends State<DataPresenter> {
     super.initState();
 
     _variants.addAll(widget._variants);
+    _variants.sort(_listSort);
   }
 
   void _sort(int index, bool ascending) {
