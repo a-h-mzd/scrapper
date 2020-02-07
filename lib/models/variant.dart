@@ -4,8 +4,8 @@ class Variant {
   final String name;
   final String sift;
   final String polyphen;
-  final double cADDScore;
-  final String alleleCount;
+  final String cADDScore;
+  final int alleleCount;
   final double dbSNPESPMAF;
   final double dbSNPExACMAF;
   final double alleleFrequency;

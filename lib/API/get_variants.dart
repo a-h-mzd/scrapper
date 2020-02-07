@@ -24,12 +24,22 @@ class GetVariants {
     Match match = regExp.allMatches(res.toString()).first;
     var variantsJSON = match.group(0);
     variantsJSON = variantsJSON.substring(24, variantsJSON.length-1);
-    List <dynamic> variantsMappings = jsonDecode(variantsJSON);
+    List <dynamic> variantMappings = jsonDecode(variantsJSON);
     List<Variant> variants = [];
-    for (dynamic variantMapping in variantsMappings) {
-      Variant variant = Variant();
+    for (dynamic variantMapping in variantMappings) {
+      Map <String, dynamic> res; // TODO
+      Variant variant = Variant(
+        name: variantMapping['variant_id'],
+        alleleCount: variantMapping['allele_count'],
+        alleleFrequency: variantMapping['allele_freq'],
+        cADDScore: variantMapping['dbnsfp_pred']['CADD Score (Phred Scale)'],
+        polyphen: variantMapping['dbnsfp_pred']['Polyphen2 HVAR Pred (C)'],
+        sift: variantMapping['dbnsfp_pred']['SIFT Pred (C)'],
+        numberOfPeople: variantMapping['allele_count'],
+      );
       variants.add(variant);
     }
+    variants.map((e) => print(e.name)).toList();
     return variants;
   }
 }
