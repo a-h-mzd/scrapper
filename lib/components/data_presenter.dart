@@ -46,7 +46,7 @@ class _DataPresenterState extends State<DataPresenter> {
         returnValue = variant1.name.compareTo(variant2.name);
         break;
       case 1:
-        returnValue = variant1.aADDScore.compareTo(variant2.aADDScore);
+        returnValue = variant1.cADDScore.compareTo(variant2.cADDScore);
         break;
       case 2:
         returnValue =
@@ -128,7 +128,7 @@ class _DataPresenterState extends State<DataPresenter> {
                 },
                 cells: [
                   DataCell(CText(variant.name)),
-                  DataCell(CText(variant.aADDScore)),
+                  DataCell(CText(variant.cADDScore)),
                   DataCell(CText(variant.alleleFrequency)),
                 ],
               ))

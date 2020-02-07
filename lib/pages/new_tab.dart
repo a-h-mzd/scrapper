@@ -31,17 +31,17 @@ class _NewTabState extends State<NewTab>
         child: DataPresenter([
           Variant(
             name: '1',
-            aADDScore: 14,
+            cADDScore: 14,
             alleleFrequency: 16,
           ),
           Variant(
             name: '2',
-            aADDScore: 12,
+            cADDScore: 12,
             alleleFrequency: 17,
           ),
           Variant(
             name: '3',
-            aADDScore: 13,
+            cADDScore: 13,
             alleleFrequency: 15,
           ),
         ].expand<Variant>((element) {
