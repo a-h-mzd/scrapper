@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:scrapper/components/Text.dart';
+import 'package:scrapper/components/loading.dart';
 import 'package:scrapper/helpers/db.dart';
 import 'package:scrapper/pages/new_tab.dart';
+import 'package:scrapper/components/Text.dart';
 import 'package:scrapper/API/get_variants.dart';
 
 class Search extends StatefulWidget {
@@ -20,6 +21,7 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   TextEditingController _controller = TextEditingController();
+  Loading _loading = Loading();
 
   String get _genomeName => _controller.text;
 
@@ -28,11 +30,22 @@ class _SearchState extends State<Search> {
     if (db.contains(_genomeName))
       widget.newTabState.variants = db.getVariants(_genomeName);
     else {
-      widget.newTabState.variants =
-          await GetVariants().getVariants(_genomeName); //'OTX2'
-      await db.addGenome(_genomeName, widget.newTabState.variants);
+      _loading.show(context);
+      try {
+        widget.newTabState.variants =
+            await GetVariants().getVariants(_genomeName); //'OTX2'
+        await db.addGenome(_genomeName, widget.newTabState.variants);
+      } catch (e) {
+        _loading.hide(context);
+        Scaffold.of(context).hideCurrentSnackBar();
+        SnackBar snackbar = SnackBar(
+            content: CText('Genome Not Found', textAlign: TextAlign.center));
+        Scaffold.of(context).showSnackBar(snackbar);
+        return;
+      }
     }
     widget.newTabState.widget.getTabInfo.title = _genomeName;
+    _loading.hide(context);
     widget.setState(() {
       widget.newTabState.stage = 1;
     });
