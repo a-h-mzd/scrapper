@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  html: ^0.13.3+3
+  dio: any
 
   csv: ^4.0.3
   hive: ^1.4.0
