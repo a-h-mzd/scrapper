@@ -13,7 +13,7 @@ class Output {
   void writeString(String fileName, String text) {
     if (text == null || fileName == null) return;
     File(Directory.current.path + '/output/$fileName')
-      ..createSync()
+      ..createSync(recursive: true)
       ..writeAsString(text);
   }
 }
