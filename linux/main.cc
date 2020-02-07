@@ -61,8 +61,8 @@ int main(int argc, char **argv) {
   flutter::FlutterWindowController flutter_controller(icu_data_path);
   flutter::WindowProperties window_properties = {};
   window_properties.title = "Scrapper";
-  window_properties.width = 800;//1280;
-  window_properties.height = 600;//720;
+  window_properties.width = 1280;
+  window_properties.height = 720;
   window_properties.prevent_resize = true;
 
   // Start the engine.
