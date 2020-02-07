@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Variant {
   final String name;
   final String sift;
@@ -26,4 +28,36 @@ class Variant {
   });
 
   bool get damaging => true; //TODO!
+
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'sift': sift,
+        'polyphen': polyphen,
+        'cADDScore': cADDScore,
+        'alleleCount': alleleCount,
+        'dbSNPESPMAF': dbSNPESPMAF,
+        'dbSNPExACMAF': dbSNPExACMAF,
+        'alleleFrequency': alleleFrequency,
+        'dbSNPGenomADMAF': dbSNPGenomADMAF,
+        'dbSNP1000GenomeMAF': dbSNP1000GenomeMAF,
+        'numberOfPeople': numberOfPeople,
+        'damaging': damaging,
+      };
+
+  factory Variant.fromJsonString(String jsonString) {
+    Map<String, dynamic> rawData = jsonDecode(jsonString);
+    return Variant(
+      name: rawData['name'],
+      alleleCount: rawData['alleleCount'],
+      alleleFrequency: rawData['alleleFrequency'],
+      cADDScore: rawData['cADDScore'],
+      polyphen: rawData['polyphen'],
+      sift: rawData['sift'],
+      dbSNP1000GenomeMAF: rawData['dbSNP1000GenomeMAF'],
+      dbSNPExACMAF: rawData['dbSNPExACMAF'],
+      dbSNPESPMAF: rawData['dbSNPESPMAF'],
+      dbSNPGenomADMAF: rawData['dbSNPGenomADMAF'],
+      numberOfPeople: rawData['numberOfPeople'],
+    );
+  }
 }
