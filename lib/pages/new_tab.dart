@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scrapper/models/variant.dart';
-import 'package:scrapper/API/get_variants.dart';
+import 'package:scrapper/components/search.dart';
 import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:scrapper/components/data_presenter.dart';
 
@@ -10,7 +10,7 @@ class NewTab extends StatefulWidget {
   NewTab(
     this.changeState, {
     TabInfo tabInfo,
-    GlobalKey<_NewTabState> key,
+    GlobalKey<NewTabState> key,
   })  : _tabInfo = tabInfo,
         super(key: key);
 
@@ -18,33 +18,23 @@ class NewTab extends StatefulWidget {
   final void Function(VoidCallback) changeState;
 
   @override
-  _NewTabState createState() => _NewTabState();
+  NewTabState createState() => NewTabState();
 }
 
-class _NewTabState extends State<NewTab>
+class NewTabState extends State<NewTab>
     with AutomaticKeepAliveClientMixin<NewTab> {
-  List<Variant> variants = [];
-  int _stage = 1;
-
-  void changeStage(int newStage, var data) async {}
-
-  @override
-  void initState() {
-    super.initState();
-
-    GetVariants()
-        .getVariants('OTX2')
-        .then((value) => setState(() => variants = value));
-  }
+  List<Variant> variants;
+  Size screenSize = Size(0, 0);
+  int stage = 0;
 
   Widget get stageWidget {
     Widget child;
-    switch (_stage) {
+    switch (stage) {
       case 0:
-        child = Container();
+        child = Search(setState, this);
         break;
       case 1:
-        child = variants.isEmpty ? Container() : DataPresenter(variants);
+        child = DataPresenter(variants);
         break;
       default:
         child = Container();
@@ -55,11 +45,14 @@ class _NewTabState extends State<NewTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Center(
-      child: SingleChildScrollView(
-        child: stageWidget,
-      ),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      screenSize = constraints.biggest;
+      return Center(
+        child: SingleChildScrollView(
+          child: stageWidget,
+        ),
+      );
+    });
   }
 
   @override
@@ -93,7 +86,7 @@ class TabInfo implements TickerProvider {
     if (!_canReset) return;
     _canReset = false;
     _icon = Icons.tab;
-    _title = 'New Tab';
+    _title = 'Search';
     _controller.reverse().then((value) {
       changeState(
           () => _tab = NewTab(changeState, tabInfo: this, key: GlobalKey()));
@@ -105,7 +98,7 @@ class TabInfo implements TickerProvider {
     this.changeState, {
     IconData icon,
     String title,
-  })  : _title = title ?? 'New Tab',
+  })  : _title = title ?? 'Search',
         _icon = icon ?? Icons.tab {
     _tab = NewTab(changeState, tabInfo: this, key: GlobalKey());
     _controller = AnimationController(

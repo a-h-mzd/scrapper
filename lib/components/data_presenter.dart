@@ -63,77 +63,80 @@ class _DataPresenterState extends State<DataPresenter> {
 
   @override
   Widget build(BuildContext context) {
-    return DataTable(
-      sortColumnIndex: _currentSortIndex,
-      showCheckboxColumn: false,
-      sortAscending: _ascending,
-      columns: <DataColumn>[
-        DataColumn(
-          label: CText('name'),
-          onSort: _sort,
-        ),
-        DataColumn(
-          label: CText('aADDScore'),
-          onSort: _sort,
-        ),
-        DataColumn(
-          label: CText('alleleFrequency'),
-          onSort: _sort,
-        ),
-      ],
-      rows: _variants
-          .map((Variant variant) => DataRow(
-                onSelectChanged: (_) async {
-                  String oldData;
-                  try {
-                    oldData = (await Clipboard.getData('text/plain')).text;
-                  } catch (e) {}
-                  final String textToCopy = variant.name;
-                  await Clipboard.setData(ClipboardData(text: textToCopy));
-                  final SnackBar snackBar = SnackBar(
-                    content: Row(
-                      children: <Widget>[
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: CText(
-                            'copied to clipboard.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        if (oldData != null)
-                          Material(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(8),
-                            child: InkWell(
-                              child: Padding(
-                                child: CText('undo'),
-                                padding: const EdgeInsets.all(8),
-                              ),
-                              splashColor: Colors.blueGrey,
-                              borderRadius: BorderRadius.circular(8),
-                              onTap: () async {
-                                await Clipboard.setData(
-                                    ClipboardData(text: oldData));
-                                Scaffold.of(context).hideCurrentSnackBar();
-                              },
+    return SizedBox(
+      width: double.infinity,
+      child: DataTable(
+        sortColumnIndex: _currentSortIndex,
+        showCheckboxColumn: false,
+        sortAscending: _ascending,
+        columns: <DataColumn>[
+          DataColumn(
+            label: CText('name'),
+            onSort: _sort,
+          ),
+          DataColumn(
+            label: CText('aADDScore'),
+            onSort: _sort,
+          ),
+          DataColumn(
+            label: CText('alleleFrequency'),
+            onSort: _sort,
+          ),
+        ],
+        rows: _variants
+            .map((Variant variant) => DataRow(
+                  onSelectChanged: (_) async {
+                    String oldData;
+                    try {
+                      oldData = (await Clipboard.getData('text/plain')).text;
+                    } catch (e) {}
+                    final String textToCopy = variant.name;
+                    await Clipboard.setData(ClipboardData(text: textToCopy));
+                    final SnackBar snackBar = SnackBar(
+                      content: Row(
+                        children: <Widget>[
+                          Flexible(
+                            fit: FlexFit.tight,
+                            child: CText(
+                              'copied to clipboard.',
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                      ],
-                    ),
-                    shape: Border(
-                      top: BorderSide(width: 2, color: Colors.blue),
-                    ),
-                  );
-                  Scaffold.of(context).hideCurrentSnackBar();
-                  Scaffold.of(context).showSnackBar(snackBar);
-                },
-                cells: [
-                  DataCell(CText(variant.name)),
-                  DataCell(CText(variant.cADDScore)),
-                  DataCell(CText(variant.alleleFrequency)),
-                ],
-              ))
-          .toList(),
+                          if (oldData != null)
+                            Material(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(8),
+                              child: InkWell(
+                                child: Padding(
+                                  child: CText('undo'),
+                                  padding: const EdgeInsets.all(8),
+                                ),
+                                splashColor: Colors.blueGrey,
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () async {
+                                  await Clipboard.setData(
+                                      ClipboardData(text: oldData));
+                                  Scaffold.of(context).hideCurrentSnackBar();
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                      shape: Border(
+                        top: BorderSide(width: 2, color: Colors.blue),
+                      ),
+                    );
+                    Scaffold.of(context).hideCurrentSnackBar();
+                    Scaffold.of(context).showSnackBar(snackBar);
+                  },
+                  cells: [
+                    DataCell(CText(variant.name)),
+                    DataCell(CText(variant.cADDScore)),
+                    DataCell(CText(variant.alleleFrequency)),
+                  ],
+                ))
+            .toList(),
+      ),
     );
   }
 }
