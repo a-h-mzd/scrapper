@@ -5,6 +5,7 @@ import 'package:scrapper/pages/new_tab.dart';
 import 'package:scrapper/helpers/output.dart';
 import 'package:scrapper/models/variant.dart';
 import 'package:scrapper/components/Text.dart';
+import 'package:scrapper/helpers/clipboard.dart';
 
 class DataPresenter extends StatefulWidget {
   final List<Variant> _variants = [];
@@ -147,51 +148,9 @@ class _DataPresenterState extends State<DataPresenter> {
             rows: _variants
                 .map((Variant variant) => DataRow(
                       onSelectChanged: (_) async {
-                        String oldData;
-                        try {
-                          oldData =
-                              (await Clipboard.getData('text/plain')).text;
-                        } catch (e) {}
-                        final String textToCopy = variant.name;
-                        await Clipboard.setData(
-                            ClipboardData(text: textToCopy));
-                        final SnackBar snackBar = SnackBar(
-                          content: Row(
-                            children: <Widget>[
-                              Flexible(
-                                fit: FlexFit.tight,
-                                child: CText(
-                                  'copied to clipboard.',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              if (oldData != null)
-                                Material(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: InkWell(
-                                    child: Padding(
-                                      child: CText('undo'),
-                                      padding: const EdgeInsets.all(8),
-                                    ),
-                                    splashColor: Colors.blueGrey,
-                                    borderRadius: BorderRadius.circular(8),
-                                    onTap: () async {
-                                      await Clipboard.setData(
-                                          ClipboardData(text: oldData));
-                                      Scaffold.of(context)
-                                          .hideCurrentSnackBar();
-                                    },
-                                  ),
-                                ),
-                            ],
-                          ),
-                          shape: Border(
-                            top: BorderSide(width: 2, color: Colors.blue),
-                          ),
-                        );
-                        Scaffold.of(context).hideCurrentSnackBar();
-                        Scaffold.of(context).showSnackBar(snackBar);
+                        ClipBoardHelper clipBoardHelper = ClipBoardHelper();
+                        await clipBoardHelper.copyToClipBoard(
+                            context, variant.name);
                       },
                       cells: [
                         DataCell(CText(variant.name)),
