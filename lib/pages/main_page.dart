@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrapper/pages/new_tab.dart';
 
-class SearchPage extends StatefulWidget {
+class MainPage extends StatefulWidget {
   @override
-  _SearchPageState createState() => _SearchPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _MainPageState extends State<MainPage> {
   final FocusNode _focusNode = FocusNode();
   final List<TabInfo> _tabs = <TabInfo>[];
   bool _canAddTab = true;
