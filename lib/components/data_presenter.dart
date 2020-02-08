@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scrapper/helpers/csv.dart';
+import 'package:scrapper/pages/new_tab.dart';
+import 'package:scrapper/helpers/output.dart';
 import 'package:scrapper/models/variant.dart';
 import 'package:scrapper/components/Text.dart';
 
 class DataPresenter extends StatefulWidget {
   final List<Variant> _variants = [];
+  final NewTabState newTabState;
 
-  DataPresenter(final List<Variant> variants) {
+  DataPresenter(final List<Variant> variants, this.newTabState) {
     _variants.addAll(variants);
   }
 
@@ -15,6 +19,7 @@ class DataPresenter extends StatefulWidget {
 }
 
 class _DataPresenterState extends State<DataPresenter> {
+  TextEditingController _controller = TextEditingController();
   final List<Variant> _variants = [];
   int _currentSortIndex = 0;
   bool _ascending = true;
@@ -61,81 +66,144 @@ class _DataPresenterState extends State<DataPresenter> {
     return returnValue * (_ascending ? 1 : -1);
   }
 
+  void _export() {
+    String toSave = CsvHelper().variantsToCsv(_variants);
+    if (_controller.text != '')
+      Output().writeString('${_controller.text}.csv', toSave);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: DataTable(
-        sortColumnIndex: _currentSortIndex,
-        showCheckboxColumn: false,
-        sortAscending: _ascending,
-        columns: <DataColumn>[
-          DataColumn(
-            label: CText('name'),
-            onSort: _sort,
+      child: Column(
+        children: <Widget>[
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              if (false)
+                Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: RaisedButton.icon(
+                    color: Colors.blue,
+                    onPressed: () => null,
+                    shape: StadiumBorder(),
+                    textColor: Colors.white,
+                    icon: Icon(Icons.arrow_drop_down),
+                    label: CText('Filters'),
+                  ),
+                ),
+              SizedBox(width: 80),
+              SizedBox(
+                width: widget.newTabState.screenSize.width / 10,
+                child: TextField(
+                  maxLines: 1,
+                  controller: _controller,
+                  textAlign: TextAlign.center,
+                  inputFormatters: [
+                    WhitelistingTextInputFormatter(RegExp("[a-zA-Z._]")),
+                  ],
+                  decoration: InputDecoration(
+                    hintText: 'File Name',
+                  ),
+                ),
+              ),
+              RaisedButton.icon(
+                onPressed: _export,
+                color: Colors.blue,
+                shape: StadiumBorder(),
+                textColor: Colors.white,
+                icon: Icon(Icons.save_alt),
+                label: CText('Export CSV'),
+              ),
+            ],
           ),
-          DataColumn(
-            label: CText('aADDScore'),
-            onSort: _sort,
-          ),
-          DataColumn(
-            label: CText('alleleFrequency'),
-            onSort: _sort,
+          SizedBox(height: 20),
+          DataTable(
+            sortColumnIndex: _currentSortIndex,
+            showCheckboxColumn: false,
+            sortAscending: _ascending,
+            columns: <DataColumn>[
+              DataColumn(
+                label: CText('name'),
+                onSort: _sort,
+              ),
+              DataColumn(
+                label: CText('cADDScore'),
+                onSort: _sort,
+              ),
+              DataColumn(
+                label: CText('alleleFrequency'),
+                onSort: _sort,
+              ),
+              DataColumn(
+                label: CText('polyphen'),
+              ),
+              DataColumn(
+                label: CText('dbSNP1000GenomeMAF'),
+              ),
+            ],
+            rows: _variants
+                .map((Variant variant) => DataRow(
+                      onSelectChanged: (_) async {
+                        String oldData;
+                        try {
+                          oldData =
+                              (await Clipboard.getData('text/plain')).text;
+                        } catch (e) {}
+                        final String textToCopy = variant.name;
+                        await Clipboard.setData(
+                            ClipboardData(text: textToCopy));
+                        final SnackBar snackBar = SnackBar(
+                          content: Row(
+                            children: <Widget>[
+                              Flexible(
+                                fit: FlexFit.tight,
+                                child: CText(
+                                  'copied to clipboard.',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              if (oldData != null)
+                                Material(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: InkWell(
+                                    child: Padding(
+                                      child: CText('undo'),
+                                      padding: const EdgeInsets.all(8),
+                                    ),
+                                    splashColor: Colors.blueGrey,
+                                    borderRadius: BorderRadius.circular(8),
+                                    onTap: () async {
+                                      await Clipboard.setData(
+                                          ClipboardData(text: oldData));
+                                      Scaffold.of(context)
+                                          .hideCurrentSnackBar();
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                          shape: Border(
+                            top: BorderSide(width: 2, color: Colors.blue),
+                          ),
+                        );
+                        Scaffold.of(context).hideCurrentSnackBar();
+                        Scaffold.of(context).showSnackBar(snackBar);
+                      },
+                      cells: [
+                        DataCell(CText(variant.name)),
+                        DataCell(CText(variant.cADDScore)),
+                        DataCell(CText(variant.alleleFrequency)),
+                        DataCell(CText(variant.polyphen)),
+                        DataCell(CText(variant.dbSNP1000GenomeMAF ?? '?')),
+                      ],
+                    ))
+                .toList(),
           ),
         ],
-        rows: _variants
-            .map((Variant variant) => DataRow(
-                  onSelectChanged: (_) async {
-                    String oldData;
-                    try {
-                      oldData = (await Clipboard.getData('text/plain')).text;
-                    } catch (e) {}
-                    final String textToCopy = variant.name;
-                    await Clipboard.setData(ClipboardData(text: textToCopy));
-                    final SnackBar snackBar = SnackBar(
-                      content: Row(
-                        children: <Widget>[
-                          Flexible(
-                            fit: FlexFit.tight,
-                            child: CText(
-                              'copied to clipboard.',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          if (oldData != null)
-                            Material(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(8),
-                              child: InkWell(
-                                child: Padding(
-                                  child: CText('undo'),
-                                  padding: const EdgeInsets.all(8),
-                                ),
-                                splashColor: Colors.blueGrey,
-                                borderRadius: BorderRadius.circular(8),
-                                onTap: () async {
-                                  await Clipboard.setData(
-                                      ClipboardData(text: oldData));
-                                  Scaffold.of(context).hideCurrentSnackBar();
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                      shape: Border(
-                        top: BorderSide(width: 2, color: Colors.blue),
-                      ),
-                    );
-                    Scaffold.of(context).hideCurrentSnackBar();
-                    Scaffold.of(context).showSnackBar(snackBar);
-                  },
-                  cells: [
-                    DataCell(CText(variant.name)),
-                    DataCell(CText(variant.cADDScore)),
-                    DataCell(CText(variant.alleleFrequency)),
-                  ],
-                ))
-            .toList(),
       ),
     );
   }

@@ -34,7 +34,7 @@ class NewTabState extends State<NewTab>
         child = Search(setState, this);
         break;
       case 1:
-        child = DataPresenter(variants);
+        child = DataPresenter(variants, this);
         break;
       default:
         child = Container();

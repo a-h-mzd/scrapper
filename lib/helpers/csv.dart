@@ -33,7 +33,22 @@ class CsvHelper {
   }
 
   String variantsToCsv(List<Variant> variants) {
-    List<List<dynamic>> convertMaterial = [];
+    List<List<dynamic>> convertMaterial = [
+      [
+        'name',
+        'alleleFrequency',
+        'cADDScore',
+        'polyphen',
+        'sift',
+        'alleleCount',
+        'dbSNP1000GenomeMAF',
+        'dbSNPExACMAF',
+        'dbSNPESPMAF',
+        'dbSNPGenomADMAF',
+        'numberOfPeople',
+        'damaging',
+      ]
+    ];
     variants.map((Variant variant) {
       List<dynamic> toAdd = [];
       toAdd.add(variant.name);
@@ -49,7 +64,7 @@ class CsvHelper {
       toAdd.add(variant.numberOfPeople);
       toAdd.add(variant.damaging);
       convertMaterial.add(toAdd);
-    });
+    }).toList();
     return _listToCsvConverter.convert(convertMaterial);
   }
 }
