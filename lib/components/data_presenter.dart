@@ -5,7 +5,6 @@ import 'package:scrapper/pages/new_tab.dart';
 import 'package:scrapper/helpers/output.dart';
 import 'package:scrapper/models/variant.dart';
 import 'package:scrapper/components/Text.dart';
-import 'package:scrapper/helpers/clipboard.dart';
 
 class DataPresenter extends StatefulWidget {
   final List<Variant> _variants = [];
@@ -142,22 +141,27 @@ class _DataPresenterState extends State<DataPresenter> {
                 label: CText('polyphen'),
               ),
               DataColumn(
-                label: CText('dbSNP1000GenomeMAF'),
+                label: CText('damaging'),
               ),
             ],
             rows: _variants
                 .map((Variant variant) => DataRow(
-                      onSelectChanged: (_) async {
-                        ClipBoardHelper clipBoardHelper = ClipBoardHelper();
-                        await clipBoardHelper.copyToClipBoard(
-                            context, variant.name);
+                      onSelectChanged: (_) {
+                        final String oldTitle =
+                            widget.newTabState.widget.getTabInfo.title;
+                        widget.newTabState.selectedVariant = variant;
+                        widget.newTabState.widget.getTabInfo.title =
+                            variant.name;
+                        widget.newTabState.stage = 2;
+                        widget.newTabState.setState(() {});
+                        widget.newTabState.widget.changeState(() {});
                       },
                       cells: [
                         DataCell(CText(variant.name)),
                         DataCell(CText(variant.cADDScore)),
                         DataCell(CText(variant.alleleFrequency)),
                         DataCell(CText(variant.polyphen)),
-                        DataCell(CText(variant.dbSNP1000GenomeMAF ?? '?')),
+                        DataCell(CText(variant.damaging)),
                       ],
                     ))
                 .toList(),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:scrapper/components/loading.dart';
 import 'package:scrapper/helpers/db.dart';
 import 'package:scrapper/pages/new_tab.dart';
 import 'package:scrapper/components/Text.dart';
 import 'package:scrapper/API/get_variants.dart';
+import 'package:scrapper/components/loading.dart';
 
 class Search extends StatefulWidget {
   final NewTabState newTabState;

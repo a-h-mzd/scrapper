@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scrapper/pages/details.dart';
 import 'package:scrapper/helpers/filter.dart';
 import 'package:scrapper/models/variant.dart';
 import 'package:scrapper/components/search.dart';
@@ -28,6 +29,7 @@ class NewTabState extends State<NewTab>
   Filter _filter = Filter();
   List<Variant> rawVariants;
   List<Variant> _variants;
+  Variant selectedVariant;
   int stage = 0;
 
   Widget get stageWidget {
@@ -38,6 +40,9 @@ class NewTabState extends State<NewTab>
         break;
       case 1:
         child = DataPresenter(_variants, this);
+        break;
+      case 2:
+        child = Details(variant: selectedVariant);
         break;
       default:
         child = Container();
