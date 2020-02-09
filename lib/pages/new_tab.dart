@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scrapper/helpers/filter.dart';
 import 'package:scrapper/models/variant.dart';
 import 'package:scrapper/components/search.dart';
 import 'package:flutter/scheduler.dart' show Ticker;
@@ -23,23 +24,30 @@ class NewTab extends StatefulWidget {
 
 class NewTabState extends State<NewTab>
     with AutomaticKeepAliveClientMixin<NewTab> {
-  List<Variant> variants;
   Size screenSize = Size(0, 0);
+  Filter _filter = Filter();
+  List<Variant> rawVariants;
+  List<Variant> _variants;
   int stage = 0;
 
   Widget get stageWidget {
     Widget child;
     switch (stage) {
       case 0:
-        child = Search(setState, this);
+        child = Search(this);
         break;
       case 1:
-        child = DataPresenter(variants, this);
+        child = DataPresenter(_variants, this);
         break;
       default:
         child = Container();
     }
     return child;
+  }
+
+  void startFiltering() {
+    _variants = _filter.filter(rawVariants);
+    setState(() {});
   }
 
   @override

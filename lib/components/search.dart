@@ -6,11 +6,9 @@ import 'package:scrapper/components/Text.dart';
 import 'package:scrapper/API/get_variants.dart';
 
 class Search extends StatefulWidget {
-  final void Function(VoidCallback) setState;
   final NewTabState newTabState;
 
   const Search(
-    this.setState,
     this.newTabState, {
     Key key,
   }) : super(key: key);
@@ -28,13 +26,13 @@ class _SearchState extends State<Search> {
   void _search() async {
     DB db = DB();
     if (db.contains(_genomeName))
-      widget.newTabState.variants = db.getVariants(_genomeName);
+      widget.newTabState.rawVariants = db.getVariants(_genomeName);
     else {
       _loading.show(context);
       try {
-        widget.newTabState.variants =
+        widget.newTabState.rawVariants =
             await GetVariants().getVariants(_genomeName); //'OTX2'
-        await db.addGenome(_genomeName, widget.newTabState.variants);
+        await db.addGenome(_genomeName, widget.newTabState.rawVariants);
       } catch (e) {
         _loading.hide(context);
         Scaffold.of(context).hideCurrentSnackBar();
@@ -45,10 +43,9 @@ class _SearchState extends State<Search> {
       }
     }
     widget.newTabState.widget.getTabInfo.title = _genomeName;
+    widget.newTabState.stage = 1;
+    widget.newTabState.startFiltering();
     _loading.hide(context);
-    widget.setState(() {
-      widget.newTabState.stage = 1;
-    });
     widget.newTabState.widget.changeState(() {});
   }
 
