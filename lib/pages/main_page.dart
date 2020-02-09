@@ -109,14 +109,11 @@ class MainPageState extends State<MainPage> {
       addNewTab(context);
     else if (event.isKeyPressed(LogicalKeyboardKey.keyW)) {
       if (tabs.length == 1)
-        setState(() {
-          tabs.last.reset();
-        });
+        tabs.last.reset();
       else
-        tabs.removeLast();
+        tabs.removeAt(DefaultTabController.of(context).index);
     } else if (event.isKeyPressed(LogicalKeyboardKey.backspace)) {
       backSpaceController.add(null);
-      setState(() {});
     }
     setState(() {});
   }
