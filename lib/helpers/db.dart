@@ -59,4 +59,9 @@ class DB {
         variants.map<String>((variant) => jsonEncode(variant.toMap())).toList();
     await _box.put(name, jsonEncode(encoded));
   }
+
+  Future removeGenome(String name) async {
+    if (contains(name)) await _box.put('genomes', genomes..remove(name));
+    await _box.delete(name);
+  }
 }

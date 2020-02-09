@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scrapper/API/get_variants.dart';
+import 'package:scrapper/components/loading.dart';
 import 'package:scrapper/helpers/csv.dart';
+import 'package:scrapper/helpers/db.dart';
 import 'package:scrapper/pages/new_tab.dart';
 import 'package:scrapper/helpers/output.dart';
 import 'package:scrapper/models/variant.dart';
@@ -72,6 +75,31 @@ class _DataPresenterState extends State<DataPresenter> {
       Output().writeString('${_controller.text}.csv', toSave);
   }
 
+  void _refresh() async {
+    String _genomeName = widget.newTabState.widget.getTabInfo.title;
+    Loading _loading = Loading();
+    DB db = DB();
+    _loading.show(context);
+    try {
+      List<Variant> variants = await GetVariants().getVariants(_genomeName);
+      _variants.clear();
+      _variants.addAll(variants);
+      await db.addGenome(_genomeName, _variants);
+      _variants.sort(_listSort);
+      Scaffold.of(context).hideCurrentSnackBar();
+      SnackBar snackbar = SnackBar(
+          content: CText('Refresh Completed.', textAlign: TextAlign.center));
+      Scaffold.of(context).showSnackBar(snackbar);
+    } catch (e) {
+      Scaffold.of(context).hideCurrentSnackBar();
+      SnackBar snackbar = SnackBar(
+          content: CText('Couldn\'t Refresh.', textAlign: TextAlign.center));
+      Scaffold.of(context).showSnackBar(snackbar);
+    }
+    _loading.hide(context);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -82,8 +110,9 @@ class _DataPresenterState extends State<DataPresenter> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              if (false)
-                Directionality(
+              Opacity(
+                opacity: 0, //TODO: implement filtering!
+                child: Directionality(
                   textDirection: TextDirection.rtl,
                   child: RaisedButton.icon(
                     color: Colors.blue,
@@ -94,7 +123,8 @@ class _DataPresenterState extends State<DataPresenter> {
                     label: CText('Filters'),
                   ),
                 ),
-              SizedBox(width: 80),
+              ),
+              SizedBox(width: 140),
               SizedBox(
                 width: widget.newTabState.screenSize.width / 10,
                 child: TextField(
@@ -116,6 +146,13 @@ class _DataPresenterState extends State<DataPresenter> {
                 textColor: Colors.white,
                 icon: Icon(Icons.save_alt),
                 label: CText('Export CSV'),
+              ),
+              SizedBox(width: 140),
+              FloatingActionButton(
+                mini: true,
+                tooltip: 'refresh',
+                onPressed: _refresh,
+                child: Icon(Icons.refresh),
               ),
             ],
           ),
