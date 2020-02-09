@@ -42,11 +42,12 @@ class _SearchState extends State<Search> {
         return;
       }
     }
+    widget.newTabState.widget.getTabInfo.backupTitle = _genomeName;
     widget.newTabState.widget.getTabInfo.title = _genomeName;
     widget.newTabState.stage = 1;
     widget.newTabState.startFiltering();
     _loading.hide(context);
-    widget.newTabState.widget.changeState(() {});
+    widget.newTabState.widget.mainPageState.setState(() {});
   }
 
   @override

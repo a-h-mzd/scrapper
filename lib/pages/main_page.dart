@@ -1,15 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrapper/pages/new_tab.dart';
 
 class MainPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
+  final StreamController<void> backSpaceController =
+      StreamController.broadcast();
   final FocusNode _focusNode = FocusNode();
-  final List<TabInfo> _tabs = <TabInfo>[];
+  final List<TabInfo> tabs = <TabInfo>[];
   bool _canAddTab = true;
 
   @override
@@ -20,10 +24,17 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void dispose() {
+    backSpaceController.close();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _focusNode.requestFocus();
     return DefaultTabController(
-      length: _tabs.length,
+      length: tabs.length,
       child: Builder(builder: builder),
     );
   }
@@ -60,23 +71,23 @@ class _MainPageState extends State<MainPage> {
         ),
       ];
 
-  void _addNewTab() => _tabs.add(TabInfo(setState));
+  void _addNewTab() => tabs.add(TabInfo(this));
 
   void addNewTab(BuildContext context) async {
     if (!_canAddTab) return;
     _canAddTab = false;
     setState(_addNewTab);
     await Future.delayed(Duration(milliseconds: 100));
-    DefaultTabController.of(context).animateTo(_tabs.length - 1);
+    DefaultTabController.of(context).animateTo(tabs.length - 1);
     _canAddTab = true;
   }
 
   void closeAll() async {
-    while (_tabs.length > 1) {
-      setState(() => _tabs.removeLast());
+    while (tabs.length > 1) {
+      setState(() => tabs.removeLast());
       await Future.delayed(Duration(milliseconds: 300));
     }
-    setState(() => _tabs.last.reset());
+    setState(() => tabs.last.reset());
   }
 
   void onMenuItemSelected(BuildContext context, String action) {
@@ -96,10 +107,17 @@ class _MainPageState extends State<MainPage> {
     if (!event.isControlPressed) return;
     if (event.isKeyPressed(LogicalKeyboardKey.keyT))
       addNewTab(context);
-    else if (event.isKeyPressed(LogicalKeyboardKey.keyW)) if (_tabs.length == 1)
-      _tabs.last.reset();
-    else
-      _tabs.removeLast();
+    else if (event.isKeyPressed(LogicalKeyboardKey.keyW)) {
+      if (tabs.length == 1)
+        setState(() {
+          tabs.last.reset();
+        });
+      else
+        tabs.removeLast();
+    } else if (event.isKeyPressed(LogicalKeyboardKey.backspace)) {
+      backSpaceController.add(null);
+      setState(() {});
+    }
     setState(() {});
   }
 
@@ -123,12 +141,12 @@ class _MainPageState extends State<MainPage> {
             centerTitle: false,
             title: TabBar(
               isScrollable: true,
-              tabs: _tabs.map((TabInfo tabInfo) {
+              tabs: tabs.map((TabInfo tabInfo) {
                 return Tab(
                   child: GestureDetector(
-                    onLongPress: () => setState(() => _tabs.length == 1
-                        ? _tabs.last.reset()
-                        : _tabs.removeWhere((TabInfo newTabInfo) =>
+                    onLongPress: () => setState(() => tabs.length == 1
+                        ? tabs.last.reset()
+                        : tabs.removeWhere((TabInfo newTabInfo) =>
                             tabInfo.tab.key == newTabInfo.tab.key)),
                     child: Row(
                       children: <Widget>[
@@ -143,7 +161,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           body: TabBarView(
-            children: _tabs.map((TabInfo tabInfo) {
+            children: tabs.map((TabInfo tabInfo) {
               return tabInfo.widget;
             }).toList(),
           ),

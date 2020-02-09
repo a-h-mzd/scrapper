@@ -147,14 +147,12 @@ class _DataPresenterState extends State<DataPresenter> {
             rows: _variants
                 .map((Variant variant) => DataRow(
                       onSelectChanged: (_) {
-                        final String oldTitle =
-                            widget.newTabState.widget.getTabInfo.title;
                         widget.newTabState.selectedVariant = variant;
                         widget.newTabState.widget.getTabInfo.title =
                             variant.name;
                         widget.newTabState.stage = 2;
                         widget.newTabState.setState(() {});
-                        widget.newTabState.widget.changeState(() {});
+                        widget.newTabState.widget.mainPageState.setState(() {});
                       },
                       cells: [
                         DataCell(CText(variant.name)),
