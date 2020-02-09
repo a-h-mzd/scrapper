@@ -18,5 +18,10 @@ class Input {
     return output;
   }
 
-  String get hivePath => Directory.current.path + '/data/';
+  String get hivePath {
+    if (Platform.isWindows || Platform.isLinux)
+      return Directory.current.path + '/data/';
+    else
+      return Directory.systemTemp.path;
+  }
 }
