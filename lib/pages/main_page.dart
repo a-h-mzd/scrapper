@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrapper/pages/new_tab.dart';
+import 'package:scrapper/API/get_variants.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -26,6 +27,7 @@ class MainPageState extends State<MainPage> {
   @override
   void dispose() {
     backSpaceController.close();
+    GetVariants.dispose();
 
     super.dispose();
   }

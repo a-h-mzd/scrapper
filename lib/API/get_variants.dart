@@ -2,15 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:html/dom.dart' as HTMLElement show Element;
+import 'package:html/dom.dart';
+import '../models/variant.dart';
 import 'package:html/parser.dart';
 import 'package:scrapper/models/variant.dart';
-import '../models/variant.dart';
 
 class GetVariants {
-  final Set <String> _validPredictionSiteStrings = {'GnomAD', 'ESP', 'ExAC', '1000G'}.map((e) => ' $e)').toSet();
+  final Set<String> _validPredictionSiteStrings =
+      {'GnomAD', 'ESP', 'ExAC', '1000G'}.map((e) => ' $e)').toSet();
+  static final StreamController<double> progressStreamController =
+      StreamController.broadcast();
   static GetVariants _instance;
-  static final StreamController <double> streamController = StreamController.broadcast();
+  Dio client = new Dio();
 
   factory GetVariants() {
     if (_instance == null) _instance = GetVariants._internal();
@@ -19,10 +22,9 @@ class GetVariants {
 
   GetVariants._internal();
 
-  static void dispose() => streamController.close();
+  static void dispose() => progressStreamController.close();
 
   Future<String> _getGenomeResultsLink(String genomeName) async {
-    Dio client = new Dio();
     var uri = Uri.http('www.iranome.ir', '/awesome', {"query": genomeName});
     var res = await client.getUri(uri,
         options: Options(
@@ -33,18 +35,19 @@ class GetVariants {
     return res.headers["location"].first;
   }
 
-  Future <Map<String, double>> _getRSDataFields (String rsid) async {
-    Dio client = new Dio();
+  Future<Map<String, double>> _getRSDataFields(String rsid) async {
     Response res = await client.get('https://www.ncbi.nlm.nih.gov/snp/' + rsid);
     var document = parse(res.data);
-    List<HTMLElement.Element> rsdatas = document.querySelectorAll('.summary-box div');
+    List<Element> rsdatas = document.querySelectorAll('.summary-box div');
     Map<String, double> resultingData = {};
-    for (HTMLElement.Element element in rsdatas ?? []) {
-      List <String> lines = element.text.split('\n');
-      String firstLine = lines[1].split('=').last; // Yeah I know :)) It's R Tiiiime ! :))
+    for (Element element in rsdatas ?? []) {
+      List<String> lines = element.text.split('\n');
+      String firstLine =
+          lines[1].split('=').last; // Yeah I know :)) It's R Tiiiime! :))
       String secondLine = lines[2].split(',').last;
       if (_validPredictionSiteStrings.contains(secondLine)) {
-        resultingData[secondLine.substring(1, secondLine.length-1)] = double.tryParse(firstLine);
+        resultingData[secondLine.substring(1, secondLine.length - 1)] =
+            double.tryParse(firstLine);
       }
     }
     return resultingData;
@@ -53,7 +56,6 @@ class GetVariants {
   Future<List<Variant>> getVariants(String genomeName) async {
     int foundVariants = 0;
     String link = await _getGenomeResultsLink(genomeName);
-    Dio client = new Dio();
     var res = await client.get(link);
     RegExp regExp = RegExp(r'window\.table_variants = (?<variantsJSON>.*);');
     Match match = regExp.allMatches(res.toString()).first;
@@ -62,7 +64,7 @@ class GetVariants {
     List<dynamic> variantMappings = jsonDecode(variantsJSON);
     List<Variant> variants = [];
     for (dynamic variantMapping in variantMappings) {
-      streamController.add(foundVariants/variantMappings.length);
+      progressStreamController.add(foundVariants / variantMappings.length);
       String rsid = variantMapping['rsid'];
       Map<String, double> rsdata = await this._getRSDataFields(rsid);
       Variant variant = Variant(
