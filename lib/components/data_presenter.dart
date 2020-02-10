@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:scrapper/API/get_variants.dart';
-import 'package:scrapper/components/loading.dart';
-import 'package:scrapper/helpers/csv.dart';
 import 'package:scrapper/helpers/db.dart';
+import 'package:scrapper/helpers/csv.dart';
 import 'package:scrapper/pages/new_tab.dart';
 import 'package:scrapper/helpers/output.dart';
 import 'package:scrapper/models/variant.dart';
 import 'package:scrapper/components/Text.dart';
+import 'package:scrapper/API/get_variants.dart';
+import 'package:scrapper/components/loading.dart';
 
 class DataPresenter extends StatefulWidget {
   final List<Variant> _variants = [];
@@ -196,7 +196,7 @@ class _DataPresenterState extends State<DataPresenter> {
                         DataCell(CText(variant.cADDScore)),
                         DataCell(CText(variant.alleleFrequency)),
                         DataCell(CText(variant.polyphen)),
-                        DataCell(CText(variant.damaging)),
+                        DataCell(CText(variant.damaging ? 'YES' : 'NO')),
                       ],
                     ))
                 .toList(),

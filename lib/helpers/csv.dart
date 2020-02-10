@@ -62,7 +62,7 @@ class CsvHelper {
       toAdd.add(variant.dbSNPESPMAF);
       toAdd.add(variant.dbSNPGenomADMAF);
       toAdd.add(variant.numberOfPeople);
-      toAdd.add(variant.damaging);
+      toAdd.add(variant.damaging ? 'YES' : 'NO');
       convertMaterial.add(toAdd);
     }).toList();
     return _listToCsvConverter.convert(convertMaterial);

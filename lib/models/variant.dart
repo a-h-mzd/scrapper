@@ -27,7 +27,15 @@ class Variant {
     this.numberOfPeople,
   });
 
-  bool get damaging => true; //TODO!
+  bool get damaging {
+    final bool pol = polyphen != null &&
+        (polyphen.toLowerCase().contains('damaging') ||
+            polyphen.toLowerCase() == 'unknown');
+    final bool sif = sift != null && sift.toLowerCase() == 'deleterious';
+    final tempCadd = double.tryParse(cADDScore ?? '0');
+    final bool cad = tempCadd != null && tempCadd >= 15;
+    return pol || sif || cad;
+  }
 
   Map<String, dynamic> toMap() => {
         'name': name,
