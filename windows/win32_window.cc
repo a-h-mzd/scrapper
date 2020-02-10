@@ -42,10 +42,10 @@ bool Win32Window::CreateAndShow(const std::wstring &title, const Point &origin,
 
   HWND window = CreateWindow(
       window_class.lpszClassName, title.c_str(),
-      WS_OVERLAPPEDWINDOW | WS_VISIBLE, Scale(origin.x, scale_factor),
-      Scale(origin.y, scale_factor), Scale(size.width, scale_factor),
-      Scale(size.height, scale_factor), nullptr, nullptr,
-      window_class.hInstance, this);
+      WS_VISIBLE | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+      Scale(origin.x, scale_factor), Scale(origin.y, scale_factor),
+      Scale(size.width, scale_factor), Scale(size.height, scale_factor),
+      nullptr, nullptr, window_class.hInstance, this);
   return window != nullptr;
 }
 
