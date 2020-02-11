@@ -36,12 +36,14 @@ class GetVariants {
   }
 
   Future<Map<String, double>> _getRSDataFields(String rsid) async {
+    await Future.delayed(Duration(seconds: 2));
     Response res = await client.get('https://www.ncbi.nlm.nih.gov/snp/' + rsid);
     var document = parse(res.data);
     List<Element> rsdatas = document.querySelectorAll('.summary-box div');
     Map<String, double> resultingData = {};
     for (Element element in rsdatas ?? []) {
       List<String> lines = element.text.split('\n');
+      if (lines.length == 1) continue;
       String firstLine =
           lines[1].split('=').last; // Yeah I know :)) It's R Tiiiime! :))
       String secondLine = lines[2].split(',').last;
@@ -85,4 +87,10 @@ class GetVariants {
     }
     return variants;
   }
+}
+
+
+Future<int> main() async {
+  print(await GetVariants().getVariants("OTX2"));
+  return 0;
 }

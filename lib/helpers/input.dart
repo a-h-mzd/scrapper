@@ -19,7 +19,7 @@ class Input {
   }
 
   String get hivePath {
-    if (Platform.isWindows || Platform.isLinux)
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
       return Directory.current.path + '/data/';
     else
       return Directory.systemTemp.path;
