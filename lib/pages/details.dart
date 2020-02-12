@@ -22,19 +22,34 @@ class _DetailsState extends State<Details> {
   @override
   Widget build(BuildContext context) {
     List<DataRow> rows = [];
-    (widget.variant.toMap()..remove('name'))
-        .forEach((key, value) => rows.add(DataRow(
-              cells: [
-                DataCell(CText(
-                  key.toString(),
-                  fontSize: 20,
-                )),
-                DataCell(CText(
-                  value ?? '?',
-                  fontSize: 20,
-                )),
-              ],
-            )));
+    (widget.variant.toMap()..remove('name')).forEach((key, value) {
+      if (key.toLowerCase() == 'damaging')
+        rows.add(DataRow(
+          cells: [
+            DataCell(CText(
+              key.toString(),
+              fontSize: 20,
+            )),
+            DataCell(CText(
+              value ? 'YES' : 'NO',
+              fontSize: 20,
+            )),
+          ],
+        ));
+      else
+        rows.add(DataRow(
+          cells: [
+            DataCell(CText(
+              key.toString(),
+              fontSize: 20,
+            )),
+            DataCell(CText(
+              value ?? '?',
+              fontSize: 20,
+            )),
+          ],
+        ));
+    });
 
     return SizedBox(
       width: double.infinity,
