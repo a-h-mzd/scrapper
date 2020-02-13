@@ -10,10 +10,10 @@ class Input {
 
   Input._internal();
 
-  String writeString(String fileName) {
+  String readString(String fileName) {
     if (fileName == null) return null;
     String output;
-    File file = File(Directory.current.path + '/output/$fileName');
+    File file = File(Directory.current.path + '/data/$fileName');
     if (file.existsSync()) output = file.readAsStringSync();
     return output;
   }

@@ -36,8 +36,13 @@ class GetVariants {
   }
 
   Future<Map<String, double>> _getRSDataFields(String rsid) async {
-    await Future.delayed(Duration(seconds: 2));
-    Response res = await client.get('https://www.ncbi.nlm.nih.gov/snp/' + rsid);
+    Response res;
+    while (res == null)
+      try {
+        res = await client.get('https://www.ncbi.nlm.nih.gov/snp/' + rsid);
+      } catch (e) {
+        print('retrying');
+      }
     var document = parse(res.data);
     List<Element> rsdatas = document.querySelectorAll('.summary-box div');
     Map<String, double> resultingData = {};
@@ -88,7 +93,6 @@ class GetVariants {
     return variants;
   }
 }
-
 
 Future<int> main() async {
   print(await GetVariants().getVariants("OTX2"));
