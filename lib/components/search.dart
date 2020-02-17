@@ -31,7 +31,7 @@ class _SearchState extends State<Search> {
       _loading.show(context);
       try {
         widget.newTabState.rawVariants =
-            await GetVariants().getVariants(_genomeName); //'OTX2'
+            await GetVariants().getVariants(_genomeName.toUpperCase()); //'OTX2'
         await db.addGenome(_genomeName, widget.newTabState.rawVariants);
       } catch (e) {
         _loading.hide(context);
