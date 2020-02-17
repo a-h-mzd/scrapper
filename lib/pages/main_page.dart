@@ -2,12 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scrapper/helpers/db.dart';
 import 'package:scrapper/pages/new_tab.dart';
 import 'package:scrapper/API/get_variants.dart';
-
-import 'package:scrapper/helpers/db.dart';
-import 'package:scrapper/helpers/input.dart';
-import 'package:scrapper/models/variant.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -75,6 +72,21 @@ class MainPageState extends State<MainPage> {
             ],
           ),
         ),
+        if (!DB().containsMinimum())
+          PopupMenuItem<String>(
+            value: 'download database',
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.cloud_download,
+                  color: Colors.black,
+                ),
+                SizedBox(width: 8),
+                Text('download database'),
+              ],
+            ),
+          ),
       ];
 
   void _addNewTab() => tabs.add(TabInfo(this));
@@ -103,6 +115,9 @@ class MainPageState extends State<MainPage> {
         break;
       case 'Close All':
         closeAll();
+        break;
+      case 'download database':
+        DB().createMinimumDB(context);
         break;
       default:
         break;
@@ -167,30 +182,6 @@ class MainPageState extends State<MainPage> {
             children: tabs.map((TabInfo tabInfo) {
               return tabInfo.widget;
             }).toList(),
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.refresh),
-            onPressed: () async {
-              String i = Input().readString('database.csv');
-              List<String> genes = i.split('\n');
-              genes.removeLast();
-              genes.removeAt(0);
-              int failed = 0;
-              GetVariants.progressStreamController.stream.listen(print);
-              for (String gene in genes) {
-                try {
-                  if (!DB().contains(gene)) {
-                    List<Variant> variants =
-                        await GetVariants().getVariants(gene);
-                    await DB().addGenome(gene, variants);
-                  }
-                } catch (e) {
-                  failed++;
-                }
-                print(genes.indexOf(gene) + 1);
-              }
-              print(failed);
-            },
           ),
         ),
       );

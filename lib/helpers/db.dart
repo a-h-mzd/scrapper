@@ -1,10 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
+import 'package:flutter/material.dart';
 import 'package:scrapper/helpers/input.dart';
 import 'package:scrapper/models/variant.dart';
+import 'package:scrapper/API/get_variants.dart';
+import 'package:scrapper/models/minimum_db.dart';
+import 'package:scrapper/components/loading.dart';
 
 class DB {
+  static StreamController<int> progressStreamController;
   static DB _instance;
   static Box _box;
 
@@ -63,5 +69,35 @@ class DB {
   Future removeGenome(String name) async {
     if (contains(name)) await _box.put('genomes', genomes..remove(name));
     await _box.delete(name);
+  }
+
+  void createMinimumDB(BuildContext context) async {
+    progressStreamController = StreamController.broadcast();
+    Loading loading = Loading();
+    loading.show(context, true);
+
+    List<String> genes = minDB.split('\n')..removeLast();
+    for (String gene in genes) {
+      progressStreamController.add(genes.indexOf(gene) + 1);
+      if (!DB().contains(gene)) {
+        try {
+          List<Variant> variants = await GetVariants().getVariants(gene);
+          await DB().addGenome(gene, variants);
+        } catch (e) {
+          print('get failed');
+        }
+      }
+    }
+
+    progressStreamController.close();
+    loading.hide(context);
+  }
+
+  bool containsMinimum() {
+    List<String> genes = minDB.split('\n')..removeLast();
+    for (String gene in genes) {
+      if (!genomes.contains(gene)) return false;
+    }
+    return true;
   }
 }

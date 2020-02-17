@@ -90,6 +90,7 @@ class GetVariants {
       variants.add(variant);
       foundVariants++;
     }
+    progressStreamController.add(1);
     return variants;
   }
 }

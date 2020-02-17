@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:scrapper/helpers/db.dart';
 import 'package:scrapper/components/Text.dart';
 import 'package:scrapper/API/get_variants.dart';
+import 'package:scrapper/models/minimum_db.dart';
 import 'package:scrapper/components/loading_dots.dart';
 
 class Loading {
@@ -16,7 +18,7 @@ class Loading {
 
   Loading._();
 
-  void show(BuildContext context) {
+  void show(BuildContext context, [bool isDBCreating = false]) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -28,7 +30,9 @@ class Loading {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(height: 8),
-              CText('Downloading data...'),
+              isDBCreating
+                  ? _DownloadIndexIndicator()
+                  : CText('Downloading data...'),
               SizedBox(height: 16),
               _ProgressIndicator(),
               LoadingDots(),
@@ -87,5 +91,38 @@ class _ProgressIndicatorState extends State<_ProgressIndicator> {
         ),
       ],
     );
+  }
+}
+
+class _DownloadIndexIndicator extends StatefulWidget {
+  @override
+  _DownloadIndexIndicatorState createState() => _DownloadIndexIndicatorState();
+}
+
+class _DownloadIndexIndicatorState extends State<_DownloadIndexIndicator> {
+  StreamSubscription<int> _listener;
+  int _progress = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _listener = DB.progressStreamController.stream.listen((progress) {
+      _progress = progress;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _listener?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final int max = (minDB.split('\n')..removeLast()).length;
+    return CText('Downloading data... $_progress/$max');
   }
 }
