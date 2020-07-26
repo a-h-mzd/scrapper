@@ -36,27 +36,45 @@ class CsvHelper {
     List<List<dynamic>> convertMaterial = [
       [
         'name',
-        'alleleFrequency',
-        'cADDScore',
-        'polyphen',
-        'sift',
-        'alleleCount',
-        'dbSNP1000GenomeMAF',
-        'dbSNPExACMAF',
-        'dbSNPESPMAF',
-        'dbSNPGenomADMAF',
-        'numberOfPeople',
-        'damaging',
+        'rsNumber',
+        'Protein Consequence',
+        'Transcript Consequence',
+        'Filter',
+        'Annotation',
+        'Exon Number',
+        'Allele Count',
+        'Allele Number',
+        'Homozygotes',
+        'Heterozygotes',
+        'Allele Frequency',
+        'CADD Score',
+        'Polyphen',
+        'Sift',
+        '1000Genome MAF',
+        'ExAC MAF',
+        'ESP MAF',
+        'GenomAD MAF',
+        'Number Of People',
+        'Damaging',
       ]
     ];
     variants.map((Variant variant) {
       List<dynamic> toAdd = [];
       toAdd.add(variant.name);
+      toAdd.add(variant.rsid);
+      toAdd.add(variant.hgvsp);
+      toAdd.add(variant.hgvsc);
+      toAdd.add(variant.filter);
+      toAdd.add(variant.annotation);
+      toAdd.add(variant.exonNumber);
+      toAdd.add(variant.alleleCount);
+      toAdd.add(variant.alleleNumber);
+      toAdd.add(variant.homozygotes);
+      toAdd.add(variant.heterozygotes);
       toAdd.add(variant.alleleFrequency);
       toAdd.add(variant.cADDScore);
       toAdd.add(variant.polyphen);
       toAdd.add(variant.sift);
-      toAdd.add(variant.alleleCount);
       toAdd.add(variant.dbSNP1000GenomeMAF);
       toAdd.add(variant.dbSNPExACMAF);
       toAdd.add(variant.dbSNPESPMAF);

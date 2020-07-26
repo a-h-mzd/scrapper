@@ -18,6 +18,9 @@ class Variant {
   final String annotation;
   final int exonNumber;
   final String rsid;
+  final int alleleNumber;
+  final int homozygotes;
+  final int heterozygotes;
 
   const Variant({
     this.name,
@@ -37,6 +40,9 @@ class Variant {
     this.annotation,
     this.exonNumber,
     this.rsid,
+    this.alleleNumber,
+    this.heterozygotes,
+    this.homozygotes
   });
 
   bool get damaging {

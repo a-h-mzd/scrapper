@@ -91,7 +91,10 @@ class GetVariants {
         filter: variantMapping['filter'],
         annotation: variantMapping['major_consequence'],
         exonNumber: variantMapping['exon_num'],
-        rsid: variantMapping['rsid']
+        rsid: variantMapping['rsid'],
+        alleleNumber: variantMapping['allele_num'],
+        homozygotes: variantMapping['hom_count'],
+        heterozygotes: variantMapping['het_count'],
       );
       variants.add(variant);
       foundVariants++;
