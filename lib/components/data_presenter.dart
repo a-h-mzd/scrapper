@@ -73,6 +73,47 @@ class _DataPresenterState extends State<DataPresenter> {
     String toSave = CsvHelper().variantsToCsv(_variants);
     if (_controller.text != '')
       Output().writeString('${_controller.text}.csv', toSave);
+
+    final List<Variant> tempVariants = [];
+
+    for (int i = 0; i < _variants.length; i++) {
+      if (_variants[i].alleleFrequency >= 0.03) {
+        continue;
+      }
+      if (_variants[i].dbSNP1000GenomeMAF != null &&
+          _variants[i].dbSNP1000GenomeMAF >= 0.03) {
+        continue;
+      }
+      if (_variants[i].dbSNPESPMAF != null &&
+          _variants[i].dbSNPESPMAF >= 0.03) {
+        continue;
+      }
+      if (_variants[i].dbSNPExACMAF != null &&
+          _variants[i].dbSNPExACMAF >= 0.03) {
+        continue;
+      }
+      if (_variants[i].dbSNPGenomADMAF != null &&
+          _variants[i].dbSNPGenomADMAF >= 0.03) {
+        continue;
+      }
+      tempVariants.add(_variants[i]);
+    }
+
+    toSave = CsvHelper().variantsToCsv(tempVariants);
+    if (_controller.text != '')
+      Output().writeString('${_controller.text}-Allele-3Percent.csv', toSave);
+    
+    final List<Variant> tempVariants2 = [];
+
+    for (int i = 0; i < _variants.length; i++) {
+      if (_variants[i].damaging) {
+        tempVariants2.add(_variants[i]);
+      }
+    }
+
+    toSave = CsvHelper().variantsToCsv(tempVariants2);
+    if (_controller.text != '')
+      Output().writeString('${_controller.text}-Damaging.csv', toSave);
   }
 
   void _refresh() async {
@@ -182,10 +223,7 @@ class _DataPresenterState extends State<DataPresenter> {
               DataColumn(
                 label: CText('Annotation'),
               ),
-              DataColumn(
-                label: CText('ExonNumber'),
-                onSort: _sort
-              ),
+              DataColumn(label: CText('ExonNumber'), onSort: _sort),
               DataColumn(
                 label: CText('cADDScore'),
                 onSort: _sort,
