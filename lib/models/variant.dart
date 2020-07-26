@@ -12,6 +12,11 @@ class Variant {
   final double dbSNPGenomADMAF;
   final double dbSNP1000GenomeMAF;
   final int numberOfPeople;
+  final String hgvsp;
+  final String hgvsc;
+  final String filter;
+  final String annotation;
+  final int exonNumber;
 
   const Variant({
     this.name,
@@ -25,6 +30,11 @@ class Variant {
     this.dbSNPESPMAF,
     this.dbSNPGenomADMAF,
     this.numberOfPeople,
+    this.hgvsp,
+    this.hgvsc,
+    this.filter,
+    this.annotation,
+    this.exonNumber
   });
 
   bool get damaging {
@@ -50,6 +60,10 @@ class Variant {
         'dbSNP1000GenomeMAF': dbSNP1000GenomeMAF,
         'numberOfPeople': numberOfPeople,
         'damaging': damaging,
+        'proteinConsequence': hgvsp,
+        'transcriptConsequence': hgvsc,
+        'filter': filter,
+        'annotation': annotation
       };
 
   factory Variant.fromJsonString(String jsonString) {
@@ -66,6 +80,11 @@ class Variant {
       dbSNPESPMAF: rawData['dbSNPESPMAF'],
       dbSNPGenomADMAF: rawData['dbSNPGenomADMAF'],
       numberOfPeople: rawData['numberOfPeople'],
+      hgvsp: rawData['HGVSp'],
+      hgvsc: rawData['HGVSc'],
+      filter: rawData['filter'],
+      annotation: rawData['annotation'],
+      exonNumber: rawData['exon_num']
     );
   }
 }

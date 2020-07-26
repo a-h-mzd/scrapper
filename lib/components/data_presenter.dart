@@ -91,6 +91,7 @@ class _DataPresenterState extends State<DataPresenter> {
           content: CText('Refresh Completed.', textAlign: TextAlign.center));
       Scaffold.of(context).showSnackBar(snackbar);
     } catch (e) {
+      print(e);
       Scaffold.of(context).hideCurrentSnackBar();
       SnackBar snackbar = SnackBar(
           content: CText('Couldn\'t Refresh.', textAlign: TextAlign.center));
@@ -167,18 +168,37 @@ class _DataPresenterState extends State<DataPresenter> {
                 onSort: _sort,
               ),
               DataColumn(
+                label: CText('ProteinConsequence'),
+              ),
+              DataColumn(
+                label: CText('TransctiptConsequence'),
+              ),
+              DataColumn(
+                label: CText('Filter'),
+              ),
+              DataColumn(
+                label: CText('Annotation'),
+              ),
+              DataColumn(
+                label: CText('ExonNumber'),
+                onSort: _sort
+              ),
+              DataColumn(
                 label: CText('cADDScore'),
                 onSort: _sort,
               ),
               DataColumn(
-                label: CText('alleleFrequency'),
+                label: CText('AlleleFrequency'),
                 onSort: _sort,
               ),
               DataColumn(
-                label: CText('polyphen'),
+                label: CText('Polyphen'),
               ),
               DataColumn(
-                label: CText('damaging'),
+                label: CText('Sift'),
+              ),
+              DataColumn(
+                label: CText('Damaging'),
               ),
             ],
             rows: _variants
@@ -193,9 +213,15 @@ class _DataPresenterState extends State<DataPresenter> {
                       },
                       cells: [
                         DataCell(CText(variant.name)),
+                        DataCell(CText(variant.hgvsp)),
+                        DataCell(CText(variant.hgvsc)),
+                        DataCell(CText(variant.filter)),
+                        DataCell(CText(variant.annotation)),
+                        DataCell(CText(variant.exonNumber)),
                         DataCell(CText(variant.cADDScore)),
                         DataCell(CText(variant.alleleFrequency)),
                         DataCell(CText(variant.polyphen)),
+                        DataCell(CText(variant.sift)),
                         DataCell(CText(variant.damaging ? 'YES' : 'NO')),
                       ],
                     ))

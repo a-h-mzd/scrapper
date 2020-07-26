@@ -86,6 +86,10 @@ class GetVariants {
         dbSNPESPMAF: rsdata['ESP'],
         dbSNPExACMAF: rsdata['ExAC'],
         dbSNPGenomADMAF: rsdata['GnomAD'],
+        hgvsp: variantMapping['HGVSp'],
+        hgvsc: variantMapping['HGVSc'],
+        filter: variantMapping['major_consequence'],
+        exonNumber: variantMapping['exon_num']
       );
       variants.add(variant);
       foundVariants++;
