@@ -9,7 +9,7 @@ import 'package:scrapper/models/variant.dart';
 
 class GetVariants {
   final Set<String> _validPredictionSiteStrings =
-      {'GnomAD', 'ESP', 'ExAC', '1000G'}.map((e) => ' $e)').toSet();
+      {'GnomAD', 'GO-ESP', 'ExAC', '1000G'}.map((e) => ' $e)').toSet();
   static final StreamController<double> progressStreamController =
       StreamController.broadcast();
   static GetVariants _instance;
@@ -53,6 +53,8 @@ class GetVariants {
           lines[1].split('=').last; // Yeah I know :)) It's R Tiiiime! :))
       String secondLine = lines[2].split(',').last;
       if (_validPredictionSiteStrings.contains(secondLine)) {
+        print(firstLine);
+        print(secondLine);
         resultingData[secondLine.substring(1, secondLine.length - 1)] =
             double.tryParse(firstLine);
       }
@@ -83,7 +85,7 @@ class GetVariants {
         sift: variantMapping['dbnsfp_pred']['SIFT Pred (C)'],
         numberOfPeople: variantMapping['allele_count'],
         dbSNP1000GenomeMAF: rsdata['1000G'],
-        dbSNPESPMAF: rsdata['ESP'],
+        dbSNPESPMAF: rsdata['GO-ESP'],
         dbSNPExACMAF: rsdata['ExAC'],
         dbSNPGenomADMAF: rsdata['GnomAD'],
         hgvsp: variantMapping['HGVSp'],
