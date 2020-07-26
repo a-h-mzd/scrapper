@@ -17,6 +17,7 @@ class Variant {
   final String filter;
   final String annotation;
   final int exonNumber;
+  final String rsid;
 
   const Variant({
     this.name,
@@ -34,7 +35,8 @@ class Variant {
     this.hgvsc,
     this.filter,
     this.annotation,
-    this.exonNumber
+    this.exonNumber,
+    this.rsid,
   });
 
   bool get damaging {
@@ -63,7 +65,8 @@ class Variant {
         'proteinConsequence': hgvsp,
         'transcriptConsequence': hgvsc,
         'filter': filter,
-        'annotation': annotation
+        'annotation': annotation,
+        'rsid': rsid
       };
 
   factory Variant.fromJsonString(String jsonString) {
@@ -84,7 +87,8 @@ class Variant {
       hgvsc: rawData['HGVSc'],
       filter: rawData['filter'],
       annotation: rawData['annotation'],
-      exonNumber: rawData['exon_num']
+      exonNumber: rawData['exon_num'],
+      rsid: rawData['rsid']
     );
   }
 }

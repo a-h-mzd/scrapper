@@ -168,6 +168,9 @@ class _DataPresenterState extends State<DataPresenter> {
                 onSort: _sort,
               ),
               DataColumn(
+                label: CText('rsNumber'),
+              ),
+              DataColumn(
                 label: CText('ProteinConsequence'),
               ),
               DataColumn(
@@ -213,6 +216,7 @@ class _DataPresenterState extends State<DataPresenter> {
                       },
                       cells: [
                         DataCell(CText(variant.name)),
+                        DataCell(CText(variant.rsid)),
                         DataCell(CText(variant.hgvsp)),
                         DataCell(CText(variant.hgvsc)),
                         DataCell(CText(variant.filter)),

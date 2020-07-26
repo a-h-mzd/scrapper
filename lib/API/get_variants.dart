@@ -88,8 +88,10 @@ class GetVariants {
         dbSNPGenomADMAF: rsdata['GnomAD'],
         hgvsp: variantMapping['HGVSp'],
         hgvsc: variantMapping['HGVSc'],
-        filter: variantMapping['major_consequence'],
-        exonNumber: variantMapping['exon_num']
+        filter: variantMapping['filter'],
+        annotation: variantMapping['major_consequence'],
+        exonNumber: variantMapping['exon_num'],
+        rsid: variantMapping['rsid']
       );
       variants.add(variant);
       foundVariants++;
