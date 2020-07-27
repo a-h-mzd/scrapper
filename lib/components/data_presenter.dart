@@ -105,9 +105,9 @@ class _DataPresenterState extends State<DataPresenter> {
     
     final List<Variant> tempVariants2 = [];
 
-    for (int i = 0; i < _variants.length; i++) {
-      if (_variants[i].damaging) {
-        tempVariants2.add(_variants[i]);
+    for (int i = 0; i < tempVariants.length; i++) {
+      if (tempVariants[i].damaging) {
+        tempVariants2.add(tempVariants[i]);
       }
     }
 
